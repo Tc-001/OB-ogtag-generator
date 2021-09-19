@@ -1,6 +1,6 @@
 /// <reference path="./deploy.d.ts" />
 
-import { createCanvas, EmulatedCanvas2D, EmulatedCanvas2DContext, loadImage } from "https://deno.land/x/canvas@1.3.0/mod.ts";
+import { createCanvas, EmulatedCanvas2D, EmulatedCanvas2DContext, loadImage } from "https://deno.land/x/canvas@v.1.0.5/mod.ts";
 import rand from "./psrng.ts"
 
 type ApiOpts = Record<string, string>

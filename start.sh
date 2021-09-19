@@ -1,0 +1,1 @@
+deno run --allow-read --allow-write --allow-env --allow-net --allow-run --no-check https://deno.land/x/deploy/deployctl.ts run --libs=ns,fetchevent index.ts

@@ -1,6 +1,6 @@
 import { BitmapBufferAPI, Decoder } from "https://deno.land/x/bitmap/mod.ts";
 
-const data = Deno.readFileSync("font/Willy.bmp");
+const data = await Deno.readFile("font/Willy.bmp");
 const decoder = Decoder(BitmapBufferAPI.from(data));
 const imgData = decoder.data;
 

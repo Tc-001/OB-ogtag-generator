@@ -27,15 +27,17 @@ for await (const conn of server) {
     const httpConn = Deno.serveHttp(conn);
     for await (const requestEvent of httpConn) {
 			const url = new URL(requestEvent.request.url)
-			const params = new URLSearchParams(url.search)
-			if (requestEvent.request.method == "GET" && url.pathname == "/og.png") {
+			console.log(url.pathname);
+			
+			if (requestEvent.request.method == "GET" && url.pathname.endsWith("/og.png")) {
 				//Overwrite the defaults
 				console.log(`Request: ${requestEvent.request.url}`);
+				const usropts = JSON.parse(atob(decodeURIComponent(url.pathname.split("/")[1])))
 				
 				for (const key in opts) {
-					if (params.get(key)) {
+					if (usropts[key]!==undefined) {
 						//@ts-ignore
-						opts[key] = params.get(key)
+						opts[key] = usropts[key]
 					}
 				}
 				await requestEvent.respondWith(

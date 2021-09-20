@@ -1,68 +1,50 @@
-/// <reference path="./deploy.d.ts" />
-
-import { createCanvas, EmulatedCanvas2D, EmulatedCanvas2DContext, loadImage } from "https://deno.land/x/canvas/mod.ts";
-import rand from "./psrng.ts"
-
-type ApiOpts = Record<string, string>
-
-addEventListener("fetch",async (event: FetchEvent) => {
-  const url = new URL(event.request.url)
-  //Create an object with all provided options
-  let opts_fin:ApiOpts = {}
-  url.pathname.split("/")[1].split("+")
-    .forEach(opts => {
-      let split = opts.split("-")
-      opts_fin[split[0]] = split[1]
-    })
-  const image = await genimg(opts_fin)
-  const response = new Response(image, {
-    headers: { "content-type": "image/png" },
-  });
-  //@ts-ignore event
-  event.respondWith(response);
-});
+import { decode } from "https://deno.land/std@0.107.0/encoding/base64.ts"
+import gen from "./img.ts"
 
 
-async function genimg(o: ApiOpts) {
-  const canvas = createCanvas(1500, 1500);
-  const ctx = canvas.getContext("2d");
+// Create new PNG image, parameters (only indexed 8-bit pngs are supported at the moment):
+// width (number)
+// height (number)
+// depth (number of palette entries)
+// [backgroundColor] (optional background color, when omitted 'transparent' is used)
 
-  ctx.fillStyle = o.col?.replace("&h","#") ?? "skyblue";
-  ctx.fillRect(0, 0, 1500, 1500);
-
-  genBgRandPix(canvas, ctx, o.txt??"none")
-
-  if (o.txt) {
-    let text = decodeURIComponent(o.txt).split("&n")
-    text.forEach((txt, i) => {
-      ctx.fillStyle = o.txtf ?? "red";
-      ctx.font = `${o.txts??"150"}px serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle'; 
-      const dims = ctx.measureText(txt)
-      ctx.fillText(txt, canvas.width/2-(dims.width/2), parseInt(o.txts??150)*(i+1)); 
-    })
-  }
-
-  const image = await loadImage("https://ohkabots.ohkaspace.com/assets/images/logo.png");
-  ctx.drawImage(image, (canvas.width/2)-(image.width()/2), canvas.height/2);
-
-  return canvas.toBuffer("image/png")
+let opts = {
+	width: 1500,
+	height: Math.floor(1500/1.91),
+	bg_col: "#43aeff",
+	dot_col: "#0062ac",
+	text_col: "#001626",
+	dot_adj_a: 5,
+	dot_adj_b: 11,
+	title: "Hello world!\n@\nStuff",
+	title_scale: 10
 }
 
+const server = Deno.listen({ port: 8080 });
 
-function genBgRandPix(canvas: EmulatedCanvas2D, ctx:EmulatedCanvas2DContext , seed: string) {
-  const pixedim = canvas.width/20
-  const rng = rand(seed)
-  ctx.globalAlpha = 0.1;
-  for (let w = 0; w < canvas.width; w+=pixedim) {
-    for (let h = 0; h < canvas.height; h+=pixedim) {
-      if(rng() > 0.1) {
-        ctx.fillStyle = `hsl(197, ${Math.floor(rng()*100)}%, ${Math.floor(rng()*100)}%)`;
-        ctx.fillRect(w, h, pixedim, pixedim);
-      }
+for await (const conn of server) {
+  (async () => {
+    const httpConn = Deno.serveHttp(conn);
+    for await (const requestEvent of httpConn) {
+			const url = new URL(requestEvent.request.url)
+			const params = new URLSearchParams(url.search)
+			if (requestEvent.request.method == "GET" && url.pathname == "/og.png") {
+				//Overwrite the defaults
+				for (const key in opts) {
+					if (params.get(key)) {
+						//@ts-ignore
+						opts[key] = JSON.parse(`"${params.get(key)}"`)
+					}
+				}
+				await requestEvent.respondWith(
+					new Response(decode(gen(opts)), {
+						status: 200,
+						headers: {
+							"content-type": "image/png",
+						}
+					}),
+				);
+			}
     }
-  }
-  ctx.globalAlpha = 1.0;
+  })();
 }
-

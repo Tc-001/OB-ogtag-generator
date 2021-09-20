@@ -30,10 +30,12 @@ for await (const conn of server) {
 			const params = new URLSearchParams(url.search)
 			if (requestEvent.request.method == "GET" && url.pathname == "/og.png") {
 				//Overwrite the defaults
+				console.log(`Request: ${requestEvent.request.url}`);
+				
 				for (const key in opts) {
 					if (params.get(key)) {
 						//@ts-ignore
-						opts[key] = JSON.parse(`"${params.get(key)}"`)
+						opts[key] = params.get(key)
 					}
 				}
 				await requestEvent.respondWith(

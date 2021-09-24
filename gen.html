@@ -29,10 +29,11 @@
 		}
 		document.getElementById("opts").value = JSON.stringify(defaults, null, "  ")
 		function setPreview() {
-			var src = btoa(JSON.stringify(JSON.parse(document.getElementById("opts").value)))
+			var opts = JSON.parse(document.getElementById("opts").value)
+			opts.title = document.getElementById("text").value
+			var src = btoa(JSON.stringify(opts))
 			document.getElementById("previmage").src = 
-				document.getElementById("url").value
-				+ "/" + encodeURIComponent(src) + "/og.png?cache="+Math.floor(Math.random()*1000)
+				"https://cdn.statically.io/img/ohkabots.ohkaspace.com/api/og.php/"+encodeURIComponent(src)+".png"
 		}
 	</script>
 </body>

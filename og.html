@@ -13,29 +13,30 @@
 			margin: 0;
 			padding: 0;
 			font-family: 'Press Start 2P', cursive;
+			font-size: 7vh;
 		}
 		body {
-			width: 1200px;
-			height: 630px;
+			width: server(width)px;
+			height: server(height)px;
 			background: url('server(bgsvg)');
 			text-align: center;
 			display:flex;
 			justify-content:center;
 			align-items:center;
-			border: 1px solid black;
 		}
 		img {
 			max-width: 25vw;
-			max-height: 25vh;
+			max-height: 50vh;
 			display: block;
 			margin:auto;
 			position: absolute;
 			top: 0;
+			filter: drop-shadow(1vh 1vh 1vh black);
 		}
 	</style>
 </head>
 <body>
-	<img src="server(logo)" alt="" width="1000">
+	<img src="server(logo)" alt="" width="100000">
 	<div>
 		<h1>server(title)</h1>
 	</div>

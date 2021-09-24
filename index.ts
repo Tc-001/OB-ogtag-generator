@@ -1,6 +1,6 @@
 let opts: Record<string, string|number> = {
-	width: 1500,
-	height: Math.floor(1500/1.91),
+	width: 2000,
+	height: Math.floor(2000/1.91),
 	bg_col: "#43aeff",
 	dot_col: "#0062ac",
 	text_col: "#001626",
